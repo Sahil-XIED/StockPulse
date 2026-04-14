@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>StockPulse — Login</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    body { display:flex; min-height:100vh; overflow:hidden; }
+
+    /* Left brand panel */
+    .brand-panel {
+      flex:1.15; background:linear-gradient(155deg,#050c18 0%,#0a1a10 50%,#06111e 100%);
+      display:flex; flex-direction:column; justify-content:center; align-items:center;
+      padding:60px; position:relative; overflow:hidden;
+    }
+    .bp-grid { position:absolute; inset:0; background-image:linear-gradient(rgba(0,208,156,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,208,156,.04) 1px,transparent 1px); background-size:36px 36px; }
+    .bp-glow { position:absolute; width:480px; height:480px; background:radial-gradient(circle,rgba(0,208,156,.15) 0%,transparent 68%); top:50%; left:50%; transform:translate(-50%,-50%); animation:glowPulse 5s ease-in-out infinite; }
+    @keyframes glowPulse { 0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.6} 50%{transform:translate(-50%,-50%) scale(1.1);opacity:1} }
+    .bp-chart { position:absolute; bottom:0; left:0; right:0; height:160px; opacity:.12; }
+    .bp-content { position:relative; z-index:2; text-align:center; }
+    .bp-logo { display:flex; align-items:center; justify-content:center; gap:12px; margin-bottom:22px; }
+    .bp-mark { width:52px; height:52px; background:linear-gradient(135deg,var(--green),var(--green-dark)); border-radius:14px; display:flex; align-items:center; justify-content:center; font-family:var(--font-head); font-size:26px; font-weight:800; color:#fff; box-shadow:0 0 40px rgba(0,208,156,.45); }
+    .bp-name { font-family:var(--font-head); font-size:34px; font-weight:800; letter-spacing:-1px; background:linear-gradient(135deg,#fff 40%,var(--green)); -webkit-background-clip :text; -webkit-text-fill-color:transparent; }
+    .bp-tagline { font-size:15px; color:var(--text-muted); line-height:1.65; max-width:310px; margin:0 auto 36px; }
+    .bp-stats { display:flex; gap:40px; justify-content:center; }
+    .bps-val { font-family:var(--font-head); font-size:26px; font-weight:700; color:var(--green); }
+    .bps-lbl { font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-top:3px; }
+    .bp-features { display:flex; flex-direction:column; gap:10px; margin-top:34px; text-align:left; }
+    .bpf { display:flex; align-items:center; gap:10px; font-size:13px; color:var(--text-2); }
+    .bpf-icon { width:28px; height:28px; background:var(--green-dim); border-radius:7px; display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0; }
+
+    /* Right auth panel */
+    .auth-panel { width:440px; background:var(--bg-surface); border-left:1px solid var(--border); display:flex; flex-direction:column; justify-content:center; padding:48px 44px; overflow-y:auto; }
+    .auth-head { margin-bottom:28px; }
+    .auth-title{ font-family:var(--font-head); font-size:24px; font-weight:700; margin-bottom:5px; }
+    .auth-sub  { font-size:13.5px; color:var(--text-muted); }
+    .auth-sub a{ color:var(--green); font-weight:500; }
+    .inp-wrap { position:relative; }
+    .inp-icon { position:absolute; left:13px; top:50%; transform:translateY(-50%); font-size:15px; color:var(--text-muted); pointer-events:none; }
+    .f-ctrl.has-icon { padding-left:38px; }
+    .pw-eye { position:absolute; right:13px; top:50%; transform:translateY(-50%); background:none; color:var(--text-muted); font-size:16px; cursor:pointer; transition:color var(--dur); }
+    .pw-eye:hover { color:var(--text); }
+    .form-opts { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; font-size:12.5px; }
+    .chk-row   { display:flex; align-items:center; gap:7px; }
+    .chk-row input { accent-color:var(--green); width:14px; height:14px; }
+    .form-opts a { color:var(--green); }
+    .divider { display:flex; align-items:center; gap:12px; margin:20px 0; color:var(--text-muted); font-size:12px; }
+    .divider::before,.divider::after { content:''; flex:1; height:1px; background:var(--border); }
+    .social-row { display:flex; gap:10px; }
+    .btn-social { flex:1; display:flex; align-items:center; justify-content:center; gap:8px; padding:9px; background:var(--bg-card); border:1px solid var(--border-md); border-radius:var(--r-md); color:var(--text-2); font-size:13px; font-weight:500; cursor:pointer; transition:all var(--dur); font-family:var(--font-body); }
+    .btn-social:hover { border-color:var(--green); color:var(--text); }
+    .signup-link { text-align:center; margin-top:24px; font-size:13px; color:var(--text-muted); }
+    .signup-link a { color:var(--green); font-weight:600; }
+    .err-box { display:none; background:var(--red-dim); border:1px solid rgba(255,77,77,.25); border-radius:var(--r-md); padding:10px 14px; font-size:13px; color:var(--red); margin-bottom:14px; }
+    .demo-hint { margin-top:26px; padding:12px 14px; background:var(--green-dim); border:1px solid rgba(0,208,156,.2); border-radius:var(--r-md); font-size:12px; color:var(--text-2); }
+    .spinner { width:18px; height:18px; border:2px solid rgba(255,255,255,.3); border-top-color:#fff; border-radius:50%; animation:spin .7s linear infinite; }
+    @keyframes spin { to{ transform:rotate(360deg) } }
+    @media(max-width:780px){ .brand-panel{display:none;} .auth-panel{width:100%;border-left:none;} }
+  </style>
+</head>
+<body>
+
+<!-- Brand -->
+<div class="brand-panel">
+  <div class="bp-grid"></div>
+  <div class="bp-glow"></div>
+  <svg class="bp-chart" viewBox="0 0 800 160" preserveAspectRatio="none">
+    <path d="M0,130 C80,110 160,135 240,90 C320,45 400,80 480,50 C560,20 640,60 720,25 L800,15" fill="none" stroke="#00d09c" stroke-width="2.5" opacity=".8"/>
+    <path d="M0,145 C100,130 200,148 300,118 C400,88 500,110 600,90 C700,70 750,100 800,75" fill="none" stroke="#4f8ef7" stroke-width="1.5" opacity=".4"/>
+  </svg>
+  <div class="bp-content">
+    <div class="bp-logo">
+      <div class="bp-mark">S</div>
+      <div class="bp-name">StockPulse</div>
+    </div>
+    <div class="bp-tagline">India's professional stock trading simulator. Real NSE data, AI insights, zero brokerage.</div>
+    <div class="bp-stats">
+      <div><div class="bps-val">5L+</div><div class="bps-lbl">Traders</div></div>
+      <div><div class="bps-val">₹1,200Cr</div><div class="bps-lbl">Volume</div></div>
+      <div><div class="bps-val">25+</div><div class="bps-lbl">Segments</div></div>
+    </div>
+    <div class="bp-features">
+      <div class="bpf"><div class="bpf-icon">📈</div>Real-time NSE/BSE price simulation</div>
+      <div class="bpf"><div class="bpf-icon">🤖</div>AI-powered buy/sell recommendations</div>
+      <div class="bpf"><div class="bpf-icon">🎯</div>F&O options chain with PCR & VIX</div>
+      <div class="bpf"><div class="bpf-icon">🔒</div>Spring Boot + JWT bank-grade security</div>
+    </div>
+  </div>
+</div>
+
+<!-- Auth Panel -->
+<div class="auth-panel">
+  <div class="auth-head">
+    <div class="auth-title">Welcome back 👋</div>
+    <div class="auth-sub">New here? <a href="signup.html">Create a free account →</a></div>
+  </div>
+
+  <div class="err-box" id="errBox">⚠ <span id="errMsg">Invalid credentials</span></div>
+
+  <form onsubmit="doLogin(event)" autocomplete="off">
+    <div class="f-group">
+      <label class="f-label">Email Address</label>
+      <div class="inp-wrap">
+        <span class="inp-icon">✉</span>
+        <input type="email" class="f-ctrl has-icon" id="inp-email" placeholder="you@example.com" required>
+      </div>
+    </div>
+    <div class="f-group">
+      <label class="f-label">Password</label>
+      <div class="inp-wrap">
+        <span class="inp-icon">🔒</span>
+        <input type="password" class="f-ctrl has-icon" id="inp-pw" placeholder="Min. 8 characters" required style="padding-right:42px;">
+        <button type="button" class="pw-eye" onclick="toggleEye('inp-pw',this)">👁</button>
+      </div>
+    </div>
+    <div class="form-opts">
+      <label class="chk-row"><input type="checkbox" id="remember"> Remember me</label>
+      <a href="#">Forgot password?</a>
+    </div>
+    <button type="submit" class="btn btn-g btn-fw btn-lg" id="loginBtn" style="letter-spacing:.3px;">
+      Login to StockPulse
+    </button>
+  </form>
+
+  <div class="divider">or continue with</div>
+  <div class="social-row">
+    <button class="btn-social">🔵 Google</button>
+    <button class="btn-social">📱 OTP Login</button>
+  </div>
+  <div class="signup-link">Don't have an account? <a href="signup.html">Sign up free →</a></div>
+
+  <div class="demo-hint">
+    <strong style="color:var(--green);">Demo credentials:</strong><br>
+    User: <code>demo@stockpulse.com</code> / <code>demo123</code><br>
+    Admin: <code>admin@stockpulse.com</code> / <code>admin123</code>
+  </div>
+</div>
+
+<script src="js/api.js"></script>
+<script>
+  /* Redirect if already logged in */
+  if (API.getToken()) location.href = 'index.html';
+
+  function toggleEye(id, btn) {
+    const el = document.getElementById(id);
+    el.type = el.type === 'password' ? 'text' : 'password';
+    btn.textContent = el.type === 'password' ? '👁' : '🙈';
+  }
+
+  async function doLogin(e) {
+    e.preventDefault();
+    const email = document.getElementById('inp-email').value.trim();
+    const pw    = document.getElementById('inp-pw').value;
+    const btn   = document.getElementById('loginBtn');
+    const errBox= document.getElementById('errBox');
+    const errMsg= document.getElementById('errMsg');
+
+    btn.innerHTML = '<div class="spinner"></div>&nbsp; Signing in...';
+    btn.disabled  = true;
+    errBox.style.display = 'none';
+
+    try {
+      const res = await API.login(email, pw);
+      if (res && res.data) {
+        API.saveSession(res.data);
+        location.href = 'index.html';
+      } else {
+        throw new Error(res?.message || 'Login failed');
+      }
+    } catch (err) {
+      errMsg.textContent = err.message || 'Invalid email or password';
+      errBox.style.display = 'block';
+      btn.innerHTML = 'Login to StockPulse';
+      btn.disabled  = false;
+    }
+  }
+</script>
+</body>
+</html>

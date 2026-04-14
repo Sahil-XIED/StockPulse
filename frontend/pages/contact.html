@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contact — Stock Pulse</title>
+  <link rel="stylesheet" href="../css/style.css"/>
+  <style>
+    body { min-height: 100vh; display: flex; flex-direction: column; }
+    .page-nav { height:58px; background:#0c1220; border-bottom:1px solid rgba(255,255,255,0.07); display:flex; align-items:center; padding:0 32px; gap:16px; position:sticky; top:0; z-index:100; }
+    .nav-logo  { font-family:'Syne',sans-serif; font-size:17px; font-weight:700; color:#fff; text-decoration:none; display:flex; align-items:center; gap:8px; }
+    .nav-logo-dot { width:8px; height:8px; background:#00d09c; border-radius:50%; }
+    .nav-breadcrumb { font-size:12px; color:rgba(255,255,255,0.35); }
+    .nav-breadcrumb a { color:rgba(255,255,255,0.35); text-decoration:none; }
+    .nav-breadcrumb a:hover { color:#00d09c; }
+    .nav-back { margin-left:auto; font-size:13px; color:rgba(255,255,255,0.4); text-decoration:none; transition:color 0.18s; }
+    .nav-back:hover { color:#00d09c; }
+    .page-content { flex:1; max-width:860px; margin:0 auto; padding:56px 32px 64px; width:100%; }
+    .page-hero { text-align:center; margin-bottom:52px; }
+    .hero-tag { display:inline-block; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:1.5px; color:#00d09c; background:rgba(0,208,156,0.1); border:1px solid rgba(0,208,156,0.2); border-radius:99px; padding:4px 14px; margin-bottom:18px; }
+    .hero-title { font-family:'Syne',sans-serif; font-size:36px; font-weight:800; color:#fff; margin:0 0 12px; }
+    .hero-sub   { font-size:15px; color:rgba(255,255,255,0.45); }
+
+    /* Channel cards */
+    .channel-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:48px; }
+    .ch-card { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:14px; padding:22px 16px; text-align:center; transition:border-color 0.2s; }
+    .ch-card:hover { border-color:rgba(0,208,156,0.35); }
+    .ch-icon { font-size:30px; margin-bottom:10px; }
+    .ch-title { font-family:'Syne',sans-serif; font-size:14px; font-weight:700; color:#fff; margin-bottom:5px; }
+    .ch-handle { font-size:12px; color:#00d09c; margin-bottom:5px; }
+    .ch-avail  { font-size:11px; color:rgba(255,255,255,0.3); margin-bottom:14px; }
+    .ch-btn { display:inline-block; padding:8px 18px; background:#00d09c; color:#fff; border:none; border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; text-decoration:none; font-family:'DM Sans',sans-serif; transition:background 0.18s; }
+    .ch-btn:hover { background:#00a87e; }
+
+    /* Contact form */
+    .form-card { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:16px; padding:32px; }
+    .form-title { font-family:'Syne',sans-serif; font-size:20px; font-weight:700; color:#fff; margin-bottom:24px; }
+    .form-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    .f-group { margin-bottom:16px; }
+    .f-label { display:block; font-size:11px; font-weight:600; color:rgba(255,255,255,0.4); text-transform:uppercase; letter-spacing:0.9px; margin-bottom:6px; }
+    .f-input { width:100%; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); border-radius:9px; padding:10px 14px; color:#fff; font-size:14px; font-family:'DM Sans',sans-serif; outline:none; transition:border-color 0.2s; box-sizing:border-box; }
+    .f-input:focus { border-color:#00d09c; }
+    .f-input::placeholder { color:rgba(255,255,255,0.2); }
+    select.f-input { appearance:none; cursor:pointer; }
+    textarea.f-input { min-height:110px; resize:vertical; }
+    .submit-btn { width:100%; padding:13px; background:#00d09c; color:#fff; border:none; border-radius:10px; font-family:'Syne',sans-serif; font-size:15px; font-weight:700; cursor:pointer; transition:background 0.2s, transform 0.15s; }
+    .submit-btn:hover { background:#00a87e; transform:translateY(-1px); }
+
+    .sp-footer { margin-top:0; }
+    @media (max-width:640px) { .channel-grid,.form-row { grid-template-columns:1fr; } .hero-title { font-size:26px; } .page-content { padding:32px 18px 48px; } }
+  </style>
+</head>
+<body>
+<nav class="page-nav">
+  <a href="../index.html" class="nav-logo"><span class="nav-logo-dot"></span>Stock Pulse</a>
+  <span class="nav-breadcrumb"><a href="../index.html">Home</a> &rsaquo; Contact</span>
+  <a href="../index.html" class="nav-back">&#8592; Back to Dashboard</a>
+</nav>
+
+<div class="page-content">
+  <div class="page-hero">
+    <div class="hero-tag">Get in Touch</div>
+    <h1 class="hero-title">Contact Us</h1>
+    <p class="hero-sub">We typically respond within 4 hours. Choose any channel below.</p>
+  </div>
+
+  <div class="channel-grid">
+    <div class="ch-card">
+      <div class="ch-icon">&#x1F4AC;</div>
+      <div class="ch-title">Live Chat</div>
+      <div class="ch-handle">chat.stockpulse.in</div>
+      <div class="ch-avail">Mon–Sat &middot; 9AM–6PM IST</div>
+      <button class="ch-btn" onclick="alert('Live chat launching soon!')">Start Chat</button>
+    </div>
+    <div class="ch-card">
+      <div class="ch-icon">&#x1F4E7;</div>
+      <div class="ch-title">Email</div>
+      <div class="ch-handle">support@stockpulse.in</div>
+      <div class="ch-avail">Response within 4 hours</div>
+      <a class="ch-btn" href="mailto:support@stockpulse.in">Send Email</a>
+    </div>
+    <div class="ch-card">
+      <div class="ch-icon">&#x1F4F1;</div>
+      <div class="ch-title">Phone</div>
+      <div class="ch-handle">+91 98765 43210</div>
+      <div class="ch-avail">Mon–Fri &middot; 10AM–5PM IST</div>
+      <a class="ch-btn" href="tel:+919876543210">Call Now</a>
+    </div>
+  </div>
+
+  <div class="form-card">
+    <div class="form-title">Send us a Message</div>
+    <div class="form-row">
+      <div class="f-group"><label class="f-label">First Name</label><input type="text" class="f-input" placeholder="Rahul"></div>
+      <div class="f-group"><label class="f-label">Last Name</label><input type="text" class="f-input" placeholder="Sharma"></div>
+    </div>
+    <div class="f-group"><label class="f-label">Email</label><input type="email" class="f-input" placeholder="rahul@example.com"></div>
+    <div class="f-group">
+      <label class="f-label">Subject</label>
+      <select class="f-input">
+        <option value="">Select a topic</option>
+        <option>Account &amp; Login Issues</option>
+        <option>Trading &amp; Orders</option>
+        <option>Portfolio &amp; P&amp;L</option>
+        <option>Technical / Bug Report</option>
+        <option>Feature Request</option>
+        <option>Other</option>
+      </select>
+    </div>
+    <div class="f-group"><label class="f-label">Message</label><textarea class="f-input" placeholder="Describe your query in detail..."></textarea></div>
+    <button class="submit-btn" onclick="alert('Message sent! We will reply within 4 hours.')">Send Message &#8594;</button>
+  </div>
+</div>
+
+<footer class="sp-footer">
+  <div class="sp-footer-inner">
+    <div class="sp-footer-top">
+      <div class="sp-brand-col"><p class="sp-brand-name">Stock Pulse</p><p class="sp-tagline">Track. Analyze. Grow with Stock Pulse.</p></div>
+      <div><p class="sp-section-title">Quick Links</p><ul class="sp-links"><li><a href="about.html">About</a></li><li><a href="../index.html">Dashboard</a></li><li><a href="privacy.html">Privacy Policy</a></li></ul></div>
+      <div><p class="sp-section-title">Support</p><ul class="sp-links"><li><a href="help.html">Help Centre</a></li><li><a href="faq.html">FAQ</a></li><li><a href="feedback.html">Feedback</a></li></ul></div>
+    </div>
+    <div class="sp-footer-divider"></div>
+    <div class="sp-footer-bottom">
+      <p class="sp-copy">&copy; 2026 Stock Pulse | All Rights Reserved</p>
+      <p class="sp-disclaimer">For educational simulation only. Not SEBI registered.</p>
+    </div>
+  </div>
+</footer>
+</body>
+</html>

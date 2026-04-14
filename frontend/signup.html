@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>StockPulse — Create Account</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    body{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;overflow:auto;}
+    .su-wrap{width:100%;max-width:920px;display:flex;border:1px solid var(--border-md);border-radius:var(--r-xl);overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,.7);}
+    .steps-panel{width:256px;background:linear-gradient(180deg,#090f1e,#06130e);padding:34px 26px;display:flex;flex-direction:column;flex-shrink:0;}
+    .sp-logo{display:flex;align-items:center;gap:10px;margin-bottom:38px;}
+    .sp-mark{width:34px;height:34px;background:linear-gradient(135deg,var(--green),var(--green-dark));border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:800;font-size:16px;color:#fff;box-shadow:0 0 22px var(--green-glow);}
+    .sp-name{font-family:var(--font-head);font-size:17px;font-weight:700;}
+    .sp-name span{color:var(--green);}
+    .steps-lbl{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--text-muted);margin-bottom:18px;}
+    .step-row{display:flex;align-items:flex-start;gap:13px;margin-bottom:5px;}
+    .step-num{width:30px;height:30px;border-radius:50%;border:2px solid var(--border-md);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--text-muted);flex-shrink:0;transition:all .3s;}
+    .step-row.active .step-num{background:var(--green);border-color:var(--green);color:#fff;box-shadow:0 0 16px var(--green-glow);}
+    .step-row.done  .step-num{background:var(--green-dim);border-color:var(--green);color:var(--green);}
+    .step-row.done  .step-num::after{content:'✓';}
+    .step-sname{font-size:13.5px;font-weight:600;color:var(--text-2);margin-top:4px;}
+    .step-sdesc{font-size:11px;color:var(--text-muted);margin-top:2px;}
+    .step-row.active .step-sname{color:var(--text);}
+    .step-conn{width:2px;height:20px;background:var(--border);margin-left:14px;transition:background .3s;}
+    .step-conn.done{background:var(--green);}
+    .form-panel{flex:1;background:var(--bg-surface);padding:40px 44px;overflow-y:auto;}
+    .sc{display:none;animation:pgFade .35s var(--ease);}
+    .sc.active{display:block;}
+    .sc-title{font-family:var(--font-head);font-size:22px;font-weight:700;margin-bottom:4px;}
+    .sc-sub{font-size:13px;color:var(--text-muted);margin-bottom:26px;}
+    .g2-form{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+    .risk-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
+    .risk-card{border:2px solid var(--border-md);border-radius:var(--r-lg);padding:18px 14px;text-align:center;cursor:pointer;transition:all .25s;}
+    .risk-card:hover{border-color:var(--blue);}
+    .risk-card.sel{border-color:var(--green);background:var(--green-dim);}
+    .risk-emoji{font-size:30px;margin-bottom:8px;}
+    .risk-name{font-family:var(--font-head);font-size:13px;font-weight:700;margin-bottom:4px;}
+    .risk-desc{font-size:11px;color:var(--text-muted);}
+    .pw-segs{display:flex;gap:4px;margin-top:8px;}
+    .pw-seg{flex:1;height:4px;border-radius:99px;background:var(--border);transition:background .3s;}
+    .pw-seg-lbl{font-size:11px;color:var(--text-muted);margin-top:5px;}
+    .terms-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:20px;font-size:13px;color:var(--text-muted);}
+    .terms-row input{accent-color:var(--green);width:15px;height:15px;margin-top:2px;flex-shrink:0;}
+    .terms-row a{color:var(--green);}
+    .nav-btns{display:flex;gap:10px;}
+    .btn-back{flex:1;} .btn-next{flex:2;}
+    .already{text-align:center;margin-top:20px;font-size:13px;color:var(--text-muted);}
+    .already a{color:var(--green);font-weight:600;}
+    .success-wrap{text-align:center;padding:20px 0;}
+    .suc-emoji{font-size:64px;margin-bottom:14px;animation:bounce .6s ease;}
+    @keyframes bounce{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
+    .suc-title{font-family:var(--font-head);font-size:26px;font-weight:700;color:var(--green);margin-bottom:8px;}
+    .suc-sub{color:var(--text-muted);font-size:14px;line-height:1.6;}
+    .conf{display:flex;justify-content:center;gap:8px;margin:16px 0;}
+    .conf-dot{width:8px;height:8px;border-radius:50%;animation:confP 1s ease-in-out infinite;}
+    .conf-dot:nth-child(1){background:var(--green);animation-delay:0s;}
+    .conf-dot:nth-child(2){background:var(--blue); animation-delay:.2s;}
+    .conf-dot:nth-child(3){background:var(--amber);animation-delay:.4s;}
+    @keyframes confP{0%,100%{transform:scale(1);opacity:.5}50%{transform:scale(1.5);opacity:1}}
+    @media(max-width:680px){.steps-panel{display:none;}.form-panel{padding:28px 20px;}.risk-grid,.g2-form{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body>
+<div class="su-wrap">
+
+  <!-- Steps Sidebar -->
+  <div class="steps-panel">
+    <div class="sp-logo">
+      <div class="sp-mark">S</div>
+      <div class="sp-name">Stock<span>Pulse</span></div>
+    </div>
+    <div class="steps-lbl">Account Setup</div>
+
+    <div class="step-row active" id="sr1"><div class="step-num">1</div><div><div class="step-sname">Basic Info</div><div class="step-sdesc">Name & contact</div></div></div>
+    <div class="step-conn" id="sc1"></div>
+    <div class="step-row" id="sr2"><div class="step-num">2</div><div><div class="step-sname">Risk Profile</div><div class="step-sdesc">Investor type</div></div></div>
+    <div class="step-conn" id="sc2"></div>
+    <div class="step-row" id="sr3"><div class="step-num">3</div><div><div class="step-sname">Security</div><div class="step-sdesc">Password & KYC</div></div></div>
+    <div class="step-conn" id="sc3"></div>
+    <div class="step-row" id="sr4"><div class="step-num">4</div><div><div class="step-sname">All Set!</div><div class="step-sdesc">Start trading</div></div></div>
+  </div>
+
+  <!-- Form Panel -->
+  <div class="form-panel">
+
+    <!-- Step 1 -->
+    <div class="sc active" id="step1">
+      <div class="sc-title">Create your account 🚀</div>
+      <div class="sc-sub">Join 5 lakh+ traders on StockPulse — it's completely free.</div>
+      <div class="g2-form">
+        <div class="f-group"><label class="f-label">First Name</label><input class="f-ctrl" id="s1-fn" placeholder="Rahul" required></div>
+        <div class="f-group"><label class="f-label">Last Name</label><input class="f-ctrl" id="s1-ln" placeholder="Sharma"></div>
+      </div>
+      <div class="f-group"><label class="f-label">Email Address</label><input type="email" class="f-ctrl" id="s1-em" placeholder="rahul@example.com" required></div>
+      <div class="f-group"><label class="f-label">Mobile Number</label><input type="tel" class="f-ctrl" id="s1-ph" placeholder="+91 98765 43210"></div>
+      <div class="f-group">
+        <label class="f-label">City</label>
+        <select class="f-ctrl" id="s1-city">
+          <option value="">Select your city</option>
+          <option>Jaipur</option><option>Mumbai</option><option>Delhi</option><option>Bangalore</option>
+          <option>Hyderabad</option><option>Chennai</option><option>Pune</option><option>Ahmedabad</option>
+          <option>Surat</option><option>Lucknow</option><option>Indore</option><option>Bhopal</option><option>Other</option>
+        </select>
+      </div>
+      <button class="btn btn-g btn-fw btn-lg" onclick="nextStep(1)">Continue →</button>
+      <div class="already">Already have an account? <a href="login.html">Login</a></div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="sc" id="step2">
+      <div class="sc-title">Your investor profile 🎯</div>
+      <div class="sc-sub">We personalize your AI recommendations based on your risk appetite.</div>
+      <div class="risk-grid">
+        <div class="risk-card" onclick="selectRisk(this,'CONSERVATIVE')"><div class="risk-emoji">🛡️</div><div class="risk-name">Conservative</div><div class="risk-desc">Safe, steady returns. FDs, blue-chips.</div></div>
+        <div class="risk-card" onclick="selectRisk(this,'MODERATE')"><div class="risk-emoji">⚖️</div><div class="risk-name">Moderate</div><div class="risk-desc">Balanced. Mix of equity & debt.</div></div>
+        <div class="risk-card" onclick="selectRisk(this,'AGGRESSIVE')"><div class="risk-emoji">🚀</div><div class="risk-name">Aggressive</div><div class="risk-desc">High risk. F&O, small-caps.</div></div>
+      </div>
+      <div class="f-group">
+        <label class="f-label">Investment Experience</label>
+        <select class="f-ctrl">
+          <option>Beginner (0–1 years)</option><option>Intermediate (1–3 years)</option>
+          <option>Advanced (3–7 years)</option><option>Expert (7+ years)</option>
+        </select>
+      </div>
+      <div class="f-group">
+        <label class="f-label">Monthly Investment Budget</label>
+        <select class="f-ctrl">
+          <option>Under ₹5,000</option><option>₹5,000 – ₹25,000</option>
+          <option>₹25,000 – ₹1 Lakh</option><option>Above ₹1 Lakh</option>
+        </select>
+      </div>
+      <div class="nav-btns">
+        <button class="btn btn-ghost btn-lg btn-back" onclick="goStep(1)">← Back</button>
+        <button class="btn btn-g btn-lg btn-next" onclick="nextStep(2)">Continue →</button>
+      </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="sc" id="step3">
+      <div class="sc-title">Secure your account 🔐</div>
+      <div class="sc-sub">Use uppercase, numbers & special characters for a strong password.</div>
+      <div class="f-group">
+        <label class="f-label">Password</label>
+        <div style="position:relative;">
+          <input type="password" class="f-ctrl" id="s3-pw" placeholder="Min. 8 characters" oninput="checkPw(this.value)" style="padding-right:42px;">
+          <button type="button" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;color:var(--text-muted);font-size:16px;cursor:pointer;" onclick="toggleEye('s3-pw',this)">👁</button>
+        </div>
+        <div class="pw-segs"><div class="pw-seg" id="seg1"></div><div class="pw-seg" id="seg2"></div><div class="pw-seg" id="seg3"></div><div class="pw-seg" id="seg4"></div></div>
+        <div class="pw-seg-lbl" id="pw-lbl">Enter a password</div>
+      </div>
+      <div class="f-group">
+        <label class="f-label">Confirm Password</label>
+        <input type="password" class="f-ctrl" id="s3-pw2" placeholder="Repeat your password">
+      </div>
+      <div class="f-group">
+        <label class="f-label">PAN Card (Optional — for KYC later)</label>
+        <input type="text" class="f-ctrl" id="s3-pan" placeholder="ABCDE1234F" maxlength="10" style="text-transform:uppercase;" oninput="this.value=this.value.toUpperCase()">
+      </div>
+      <div class="terms-row">
+        <input type="checkbox" id="terms">
+        <label for="terms">I agree to StockPulse's <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>. I understand this is a simulation platform.</label>
+      </div>
+      <div class="nav-btns">
+        <button class="btn btn-ghost btn-lg btn-back" onclick="goStep(2)">← Back</button>
+        <button class="btn btn-g btn-lg btn-next" onclick="doSignup()">Create Account 🎉</button>
+      </div>
+    </div>
+
+    <!-- Step 4 -->
+    <div class="sc" id="step4">
+      <div class="success-wrap">
+        <div class="suc-emoji">🎉</div>
+        <div class="conf"><div class="conf-dot"></div><div class="conf-dot"></div><div class="conf-dot"></div></div>
+        <div class="suc-title">Account Created!</div>
+        <div class="suc-sub">Welcome to StockPulse family! 🇮🇳<br>Your account is ready. Start smart investing now!</div>
+        <div style="margin-top:28px;">
+          <a href="index.html" class="btn btn-g btn-lg btn-fw">Go to Dashboard →</a>
+        </div>
+        <div style="margin-top:12px;font-size:12px;color:var(--text-muted);">Auto-redirecting in <span id="countdown">5</span>s...</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="js/api.js"></script>
+<script>
+  let curStep = 1, selectedRisk = 'MODERATE';
+
+  function goStep(n) {
+    document.getElementById('step'+curStep).classList.remove('active');
+    curStep = n;
+    document.getElementById('step'+curStep).classList.add('active');
+    updateUI();
+  }
+
+  function nextStep(from) {
+    if (from === 1) {
+      if (!document.getElementById('s1-fn').value.trim() || !document.getElementById('s1-em').value.trim()) {
+        alert('Please fill in your name and email.'); return;
+      }
+    }
+    goStep(from + 1);
+  }
+
+  function updateUI() {
+    for (let i = 1; i <= 4; i++) {
+      const sr = document.getElementById('sr'+i);
+      const sc = i < 4 ? document.getElementById('sc'+i) : null;
+      sr.classList.remove('active','done');
+      if (i === curStep) sr.classList.add('active');
+      else if (i < curStep) sr.classList.add('done');
+      if (sc) sc.classList.toggle('done', i < curStep);
+    }
+  }
+
+  function selectRisk(el, type) {
+    document.querySelectorAll('.risk-card').forEach(c => c.classList.remove('sel'));
+    el.classList.add('sel');
+    selectedRisk = type;
+  }
+
+  function checkPw(val) {
+    let s = 0;
+    if (val.length >= 8) s++;
+    if (/[A-Z]/.test(val)) s++;
+    if (/[0-9]/.test(val)) s++;
+    if (/[^a-zA-Z0-9]/.test(val)) s++;
+    const colors = ['#ff4d4d','#f5a623','#4f8ef7','#00d09c'];
+    const labels = ['Weak','Fair','Good','Strong 💪'];
+    for (let i = 1; i <= 4; i++) {
+      document.getElementById('seg'+i).style.background = i <= s ? colors[s-1] : 'var(--border)';
+    }
+    const lbl = document.getElementById('pw-lbl');
+    lbl.textContent = s > 0 ? labels[s-1] : 'Enter a password';
+    lbl.style.color = s > 0 ? colors[s-1] : 'var(--text-muted)';
+  }
+
+  function toggleEye(id, btn) {
+    const el = document.getElementById(id);
+    el.type = el.type === 'password' ? 'text' : 'password';
+    btn.textContent = el.type === 'password' ? '👁' : '🙈';
+  }
+
+  async function doSignup() {
+    const pw  = document.getElementById('s3-pw').value;
+    const pw2 = document.getElementById('s3-pw2').value;
+    if (!document.getElementById('terms').checked) { alert('Please accept the terms.'); return; }
+    if (pw !== pw2)    { alert('Passwords do not match.'); return; }
+    if (pw.length < 8) { alert('Password must be at least 8 characters.'); return; }
+
+    const payload = {
+      name:        (document.getElementById('s1-fn').value + ' ' + document.getElementById('s1-ln').value).trim(),
+      email:       document.getElementById('s1-em').value.trim(),
+      password:    pw,
+      riskProfile: selectedRisk
+    };
+
+    try {
+      const res = await API.signup(payload);
+      if (res && res.data) {
+        API.saveSession(res.data);
+      }
+    } catch (e) {
+      console.warn('API not available, using local session');
+      API.saveSession({ id:2, name:payload.name, email:payload.email, role:'USER', balance:100000, token:'local-token' });
+    }
+
+    goStep(4);
+    let c = 5;
+    const ci = setInterval(() => {
+      document.getElementById('countdown').textContent = --c;
+      if (c <= 0) { clearInterval(ci); location.href = 'index.html'; }
+    }, 1000);
+  }
+</script>
+</body>
+</html>

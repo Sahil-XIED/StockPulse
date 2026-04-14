@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>About — Stock Pulse</title>
+  <link rel="stylesheet" href="../css/style.css"/>
+  <style>
+    /* ── Page wrapper ── */
+    body { min-height: 100vh; display: flex; flex-direction: column; }
+
+    /* ── Top navigation bar ── */
+    .page-nav {
+      height: 58px;
+      background: #0c1220;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      display: flex;
+      align-items: center;
+      padding: 0 32px;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav-logo {
+      font-family: 'Syne', sans-serif;
+      font-size: 17px;
+      font-weight: 700;
+      color: #fff;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .nav-logo-dot {
+      width: 8px; height: 8px;
+      background: #00d09c;
+      border-radius: 50%;
+    }
+    .nav-breadcrumb {
+      font-size: 12px;
+      color: rgba(255,255,255,0.35);
+      margin-left: 4px;
+    }
+    .nav-breadcrumb a {
+      color: rgba(255,255,255,0.35);
+      text-decoration: none;
+      transition: color 0.18s;
+    }
+    .nav-breadcrumb a:hover { color: #00d09c; }
+    .nav-back {
+      margin-left: auto;
+      font-size: 13px;
+      color: rgba(255,255,255,0.4);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: color 0.18s;
+    }
+    .nav-back:hover { color: #00d09c; }
+
+    /* ── Content wrapper ── */
+    .page-content {
+      flex: 1;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 56px 32px 64px;
+      width: 100%;
+    }
+
+    /* ── Hero ── */
+    .page-hero {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+    .hero-tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #00d09c;
+      background: rgba(0,208,156,0.1);
+      border: 1px solid rgba(0,208,156,0.2);
+      border-radius: 99px;
+      padding: 4px 14px;
+      margin-bottom: 18px;
+    }
+    .hero-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 40px;
+      font-weight: 800;
+      color: #fff;
+      margin: 0 0 14px;
+      line-height: 1.15;
+    }
+    .hero-sub {
+      font-size: 16px;
+      color: rgba(255,255,255,0.45);
+      max-width: 520px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    /* ── Stats row ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 56px;
+    }
+    .stat-box {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 14px;
+      padding: 20px 16px;
+      text-align: center;
+    }
+    .stat-box-val {
+      font-family: 'Syne', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: #00d09c;
+      margin-bottom: 5px;
+    }
+    .stat-box-lbl {
+      font-size: 12px;
+      color: rgba(255,255,255,0.35);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    /* ── Sections ── */
+    .section { margin-bottom: 52px; }
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: #fff;
+      margin: 0 0 14px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .section p {
+      font-size: 14.5px;
+      color: rgba(255,255,255,0.55);
+      line-height: 1.8;
+      margin-bottom: 14px;
+    }
+    .section p strong { color: rgba(255,255,255,0.8); }
+
+    /* ── Mission cards ── */
+    .mission-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 20px;
+    }
+    .mission-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 14px;
+      padding: 22px 18px;
+      transition: border-color 0.2s;
+    }
+    .mission-card:hover { border-color: rgba(0,208,156,0.3); }
+    .mission-icon { font-size: 28px; margin-bottom: 12px; }
+    .mission-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 7px;
+    }
+    .mission-desc {
+      font-size: 13px;
+      color: rgba(255,255,255,0.4);
+      line-height: 1.6;
+    }
+
+    /* ── Team cards ── */
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 20px;
+    }
+    .team-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 14px;
+      padding: 22px 18px;
+      text-align: center;
+    }
+    .team-avatar {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      margin: 0 auto 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .team-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+    .team-role { font-size: 12px; color: rgba(255,255,255,0.35); }
+
+    /* ── CTA ── */
+    .cta-box {
+      background: linear-gradient(135deg, rgba(0,208,156,0.1), rgba(79,142,247,0.08));
+      border: 1px solid rgba(0,208,156,0.2);
+      border-radius: 18px;
+      padding: 40px 32px;
+      text-align: center;
+      margin-top: 56px;
+    }
+    .cta-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 10px;
+    }
+    .cta-sub { font-size: 14px; color: rgba(255,255,255,0.45); margin-bottom: 24px; }
+    .cta-btn {
+      display: inline-block;
+      background: #00d09c;
+      color: #fff;
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      padding: 12px 28px;
+      border-radius: 10px;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .cta-btn:hover { background: #00a87e; transform: translateY(-1px); }
+
+    /* ── Footer inside page ── */
+    .sp-footer { margin-top: 0; }
+
+    @media (max-width: 680px) {
+      .stats-row { grid-template-columns: 1fr 1fr; }
+      .mission-grid, .team-grid { grid-template-columns: 1fr; }
+      .hero-title { font-size: 28px; }
+      .page-content { padding: 36px 18px 48px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Top Nav -->
+<nav class="page-nav">
+  <a href="../index.html" class="nav-logo">
+    <span class="nav-logo-dot"></span>
+    Stock Pulse
+  </a>
+  <span class="nav-breadcrumb">
+    <a href="../index.html">Home</a> &rsaquo; About
+  </span>
+  <a href="../index.html" class="nav-back">&#8592; Back to Dashboard</a>
+</nav>
+
+<!-- Main Content -->
+<div class="page-content">
+
+  <!-- Hero -->
+  <div class="page-hero">
+    <div class="hero-tag">Made in India</div>
+    <h1 class="hero-title">Built for Every Indian Investor</h1>
+    <p class="hero-sub">Stock Pulse makes the stock market accessible, understandable, and actionable — from Tier-1 cities to Tier-3 towns.</p>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-box"><div class="stat-box-val">5L+</div><div class="stat-box-lbl">Traders</div></div>
+    <div class="stat-box"><div class="stat-box-val">25</div><div class="stat-box-lbl">NSE Stocks</div></div>
+    <div class="stat-box"><div class="stat-box-val">650+</div><div class="stat-box-lbl">Cities</div></div>
+    <div class="stat-box"><div class="stat-box-val">4.8★</div><div class="stat-box-lbl">User Rating</div></div>
+  </div>
+
+  <!-- Our Story -->
+  <div class="section">
+    <h2 class="section-title">Our Story</h2>
+    <p>Stock Pulse was born from a simple frustration: <strong>millions of young Indians want to invest, but most platforms feel too complex and intimidating.</strong> Existing brokers serve experienced traders well — but first-timers are left behind.</p>
+    <p>We built Stock Pulse as a <strong>safe practice ground</strong> — trade with virtual money, learn by doing, understand P&L in real time, and let AI guide your decisions. No real money at risk, no fear of mistakes.</p>
+    <p>Today Stock Pulse serves traders across <strong>650+ Indian cities</strong>, with 60% of users being first-generation investors from Tier-2 and Tier-3 cities.</p>
+  </div>
+
+  <!-- Mission -->
+  <div class="section">
+    <h2 class="section-title">Our Mission</h2>
+    <div class="mission-grid">
+      <div class="mission-card">
+        <div class="mission-icon">&#x1F4DA;</div>
+        <div class="mission-title">Educate</div>
+        <div class="mission-desc">Make stock market education accessible to everyone — from college students to homemakers.</div>
+      </div>
+      <div class="mission-card">
+        <div class="mission-icon">&#x1F4AA;</div>
+        <div class="mission-title">Empower</div>
+        <div class="mission-desc">Give users tools to practice risk-free, build confidence, and make data-driven decisions.</div>
+      </div>
+      <div class="mission-card">
+        <div class="mission-icon">&#x1F331;</div>
+        <div class="mission-title">Grow Together</div>
+        <div class="mission-desc">Build a community of informed Indian investors who grow wealth intelligently.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Team -->
+  <div class="section">
+    <h2 class="section-title">Meet the Team</h2>
+    <div class="team-grid">
+      <div class="team-card">
+        <div class="team-avatar" style="background:linear-gradient(135deg,#00d09c,#007a5e);">MS</div>
+        <div class="team-name">Mohammed Sahil</div>
+        <div class="team-role">Founder &amp; CEO &middot; ACEIT Jaipur </div>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar" style="background:linear-gradient(135deg,#4f8ef7,#1a4fa0);">MS</div>
+        <div class="team-name">Mukesh Sah</div>
+        <div class="team-role">Co-Founder &amp; CTO &middot; </div>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar" style="background:linear-gradient(135deg,#9b6dff,#5a3db5);">MR</div>
+        <div class="team-name">Muskan Raj</div>
+        <div class="team-role">Co-Founder &amp; CPO &middot; </div>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar" style="background:linear-gradient(135deg,#4f8ef7,#1a4fa0);">NK</div>
+        <div class="team-name">Nikhil Ranjan</div>
+        <div class="team-role">Co-Founder &amp; CFO &middot; </div>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar" style="background:linear-gradient(135deg,#4f8ef7,#1a4fa0);">PC</div>
+        <div class="team-name">Prashant Chaudhary</div>
+        <div class="team-role">Co-Founder &amp; COO &middot; </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-box">
+    <div class="cta-title">Ready to start your journey?</div>
+    <p class="cta-sub">Join 5 lakh+ Indians practising smart investing on Stock Pulse</p>
+    <a href="../index.html" class="cta-btn">Go to Dashboard &#8594;</a>
+  </div>
+
+</div><!-- /page-content -->
+
+<!-- FOOTER — same footer, paths go up one level with ../ -->
+<footer class="sp-footer">
+  <div class="sp-footer-inner">
+    <div class="sp-footer-top">
+      <div class="sp-brand-col">
+        <p class="sp-brand-name">Stock Pulse</p>
+        <p class="sp-tagline">Track. Analyze. Grow with Stock Pulse.</p>
+        <div class="sp-social-row">
+          <a href="https://linkedin.com/company/stockpulse" target="_blank" rel="noopener" class="sp-icon-btn" aria-label="LinkedIn">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.95v5.66H9.34V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.07 2.07 0 1 1 0-4.14 2.07 2.07 0 0 1 0 4.14zm1.78 13.02H3.55V9h3.57v11.45zM22.23 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.46c.98 0 1.77-.77 1.77-1.72V1.72C24 .77 23.21 0 22.23 0z"/></svg>
+          </a>
+          <a href="https://twitter.com/stockpulse_in" target="_blank" rel="noopener" class="sp-icon-btn" aria-label="Twitter">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+          <a href="https://instagram.com/stockpulse.in" target="_blank" rel="noopener" class="sp-icon-btn" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+          </a>
+        </div>
+      </div>
+      <div>
+        <p class="sp-section-title">Quick Links</p>
+        <ul class="sp-links">
+          <li><a href="about.html">About</a></li>
+          <li><a href="../index.html">Dashboard</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="privacy.html">Privacy Policy</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="sp-section-title">Support</p>
+        <ul class="sp-links">
+          <li><a href="help.html">Help Centre</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+          <li><a href="feedback.html">Send Feedback</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="sp-footer-divider"></div>
+    <div class="sp-footer-bottom">
+      <p class="sp-copy">&copy; 2026 Stock Pulse | All Rights Reserved</p>
+      <p class="sp-disclaimer">For educational simulation only. Not SEBI registered.</p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

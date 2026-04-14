@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>StockPulse — Dashboard</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<div class="app-shell">
+
+<!-- ═══════════════ SIDEBAR ════════════════════════════════ -->
+<nav class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-mark">S</div>
+    <div class="sb-logo-name">Stock<span>Pulse</span></div>
+  </div>
+
+  <div class="sb-section">Overview</div>
+  <div class="nav-item active" data-sec="dashboard" onclick="showSection('dashboard',this)"><span class="nav-icon">📊</span>Dashboard</div>
+  <div class="nav-item" data-sec="trade"     onclick="showSection('trade',this)">    <span class="nav-icon">⚡</span>Trade</div>
+  <div class="nav-item" data-sec="portfolio" onclick="showSection('portfolio',this)"><span class="nav-icon">💼</span>Portfolio</div>
+  <div class="nav-item" data-sec="watchlist" onclick="showSection('watchlist',this)"><span class="nav-icon">★</span>Watchlist <span class="nav-badge" id="wl-badge">0</span></div>
+  <div class="nav-item" data-sec="orders"    onclick="showSection('orders',this)">   <span class="nav-icon">📋</span>Orders</div>
+
+  <div class="sb-section">Markets</div>
+  <div class="nav-item" data-sec="stocks"    onclick="showSection('stocks',this)">   <span class="nav-icon">📈</span>Stocks</div>
+  <div class="nav-item" data-sec="commodity" onclick="showSection('commodity',this)"><span class="nav-icon">🥇</span>Commodity</div>
+  <div class="nav-item" data-sec="fno"       onclick="showSection('fno',this)">      <span class="nav-icon">🎯</span>F&amp;O <span class="nav-tag hot">Hot</span></div>
+  <div class="nav-item" data-sec="ipo"       onclick="showSection('ipo',this)">      <span class="nav-icon">🏢</span>IPO <span class="nav-tag new">New</span></div>
+  <div class="nav-item" data-sec="mf"        onclick="showSection('mf',this)">       <span class="nav-icon">💰</span>Mutual Funds</div>
+
+  <div class="sb-section">Account</div>
+  <div class="nav-item" data-sec="profile"   onclick="showSection('profile',this)">  <span class="nav-icon">⚙️</span>Profile</div>
+
+  <div class="sb-bottom">
+    <div class="user-card" onclick="showSection('profile',null)">
+      <div class="u-avatar" id="user-avatar">RS</div>
+      <div style="flex:1;min-width:0;">
+        <div class="u-name" id="user-name-display">User</div>
+        <div class="u-role">Investor · Pro</div>
+      </div>
+      <button class="u-logout" onclick="event.stopPropagation();API.logout()" title="Logout">↩</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════════ MAIN WRAPPER ════════════════════════════ -->
+<div class="main-wrap">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="topbar-title" id="topbar-title">Dashboard</div>
+    <div class="search-wrap">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-inp" placeholder="Search stocks, indices..." autocomplete="off" oninput="handleSearch(this.value)">
+      </div>
+      <div class="search-dropdown" id="search-dd"></div>
+    </div>
+    <div class="topbar-right">
+      <div class="balance-pill">💰 <span id="balance-display">₹1,00,000</span></div>
+      <div class="icon-btn" title="Notifications">🔔<div class="notif-dot"></div></div>
+      <div class="icon-btn" title="Dark Mode">🌙</div>
+    </div>
+  </div>
+
+  <!-- TICKER TAPE -->
+  <div class="ticker-bar"><div class="ticker-track" id="ticker-track">Loading market data...</div></div>
+
+  <!-- PAGE CONTENT -->
+  <div class="page-content">
+
+  <!-- ════════════ DASHBOARD ════════════════════════════════ -->
+  <div class="page active" id="page-dashboard">
+    <div class="g4 mb-20">
+      <div class="stat-card green"><div class="stat-lbl">Portfolio Value</div><div class="stat-val" id="dash-portval">—</div><div class="stat-chg up" id="dash-pnlpct">—</div></div>
+      <div class="stat-card blue"> <div class="stat-lbl">Total P&L</div>     <div class="stat-val" id="dash-pnl">—</div>    <div class="stat-chg up">All time</div></div>
+      <div class="stat-card amber"><div class="stat-lbl">Available Funds</div><div class="stat-val" id="dash-balance">—</div><div class="stat-chg neu">Ready to invest</div></div>
+      <div class="stat-card purple"><div class="stat-lbl">Active Positions</div><div class="stat-val">5</div>              <div class="stat-chg neu">Across 4 sectors</div></div>
+    </div>
+    <div class="g2 mb-20" style="grid-template-columns:1.5fr 1fr;">
+      <div>
+        <div class="card mb-16">
+          <div class="card-h">📡 Market Sentiment</div>
+          <div class="sentiment-bar"><div class="s-bull" style="width:58%"></div><div class="s-neut" style="width:18%"></div><div class="s-bear" style="width:24%"></div></div>
+          <div class="flex-sb" style="font-size:11px;margin-bottom:14px;">
+            <span style="color:var(--green);font-weight:600;">🟢 Bullish 58%</span>
+            <span style="color:var(--amber);">🟡 Neutral 18%</span>
+            <span style="color:var(--red);font-weight:600;">🔴 Bearish 24%</span>
+          </div>
+          <div class="ai-box"><div class="ai-hdr">🤖 AI Market View</div><div class="ai-body">Overall market is <strong style="color:var(--green)">Bullish (58%)</strong>. Banking strong on credit growth data. IT facing headwinds from US slowdown. Infrastructure on multi-year upcycle. Recommended: 40% Large Cap, 35% Mid Cap, 25% Sectoral.</div></div>
+        </div>
+      </div>
+      <div class="card"><div class="card-h">🔥 Top Movers</div><div id="top-movers">Loading...</div></div>
+    </div>
+    <div class="g2">
+      <div class="card"><div class="card-h">🤖 AI Picks</div><div id="ai-recs">Loading...</div></div>
+      <div class="card"><div class="card-h">📊 Indices</div><div id="indices-list">Loading...</div></div>
+    </div>
+  </div>
+
+  <!-- ════════════ TRADE ════════════════════════════════════ -->
+  <div class="page" id="page-trade">
+    <div class="g2" style="grid-template-columns:1.65fr 1fr;align-items:start;">
+      <div>
+        <div class="card mb-16" style="padding:12px 14px;">
+          <div class="flex-c gap-12">
+            <select id="stock-selector" class="f-ctrl" style="flex:1;"></select>
+            <button class="btn btn-ghost btn-sm" onclick="toggleWatch(selectedSym)">★ Watch</button>
+          </div>
+        </div>
+        <div class="card mb-16">
+          <div class="flex-c gap-12 mb-16">
+            <div class="s-icon" style="width:44px;height:44px;font-size:16px;background:var(--green-dim);color:var(--green);border-radius:12px;" id="trade-icon">RL</div>
+            <div style="flex:1;">
+              <div style="font-family:var(--font-head);font-size:20px;font-weight:700;" id="trade-sym">RELIANCE</div>
+              <div style="color:var(--text-muted);font-size:12px;" id="trade-company">Reliance Industries Ltd</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-family:var(--font-head);font-size:26px;font-weight:700;" id="trade-price">—</div>
+              <div id="trade-chg" class="up" style="font-size:13px;">—</div>
+            </div>
+          </div>
+          <div class="pills" style="margin-bottom:12px;">
+            <button class="pill" onclick="setPill(this,'1d')">1D</button>
+            <button class="pill active" onclick="setPill(this,'1w')">1W</button>
+            <button class="pill" onclick="setPill(this,'1m')">1M</button>
+            <button class="pill" onclick="setPill(this,'3m')">3M</button>
+            <button class="pill" onclick="setPill(this,'1y')">1Y</button>
+          </div>
+          <div class="chart-wrap" style="height:220px;"><canvas id="trade-chart"></canvas></div>
+        </div>
+        <div class="ai-box" id="ai-insight-box"><div class="ai-hdr">🤖 AI Insight</div><div class="ai-body">Loading...</div></div>
+      </div>
+      <div class="card" style="position:sticky;top:12px;">
+        <div class="card-h">⚡ Place Order</div>
+        <div class="order-tabs">
+          <button class="o-tab buy active" id="o-tab-buy"  onclick="setOrderMode('buy')">BUY</button>
+          <button class="o-tab sell"       id="o-tab-sell" onclick="setOrderMode('sell')">SELL</button>
+        </div>
+        <div class="f-group">
+          <label class="f-label">Order Type</label>
+          <select class="f-ctrl" id="ord-type">
+            <option>Market Order</option><option>Limit Order</option><option>Stop Loss</option>
+          </select>
+        </div>
+        <div class="g2" style="gap:10px;">
+          <div class="f-group"><label class="f-label">Quantity</label><input type="number" class="f-ctrl" id="ord-qty" value="1" min="1" oninput="calcOrder()"></div>
+          <div class="f-group"><label class="f-label">Price (₹)</label><input type="number" class="f-ctrl" id="ord-price-inp" placeholder="Market"></div>
+        </div>
+        <div style="background:rgba(0,0,0,.25);border-radius:var(--r-md);padding:12px 14px;margin-bottom:12px;">
+          <div class="o-sum-row"><span class="o-sum-lbl">Market Price</span><span id="ord-price-val">—</span></div>
+          <div class="o-sum-row"><span class="o-sum-lbl">Quantity</span>    <span id="ord-qty-val">—</span></div>
+          <div class="o-sum-row"><span class="o-sum-lbl">STT (0.1%)</span>  <span id="ord-stt">—</span></div>
+          <div class="o-sum-row"><span class="o-sum-lbl">Total</span>        <span id="ord-total" style="color:var(--green);">—</span></div>
+        </div>
+        <div id="ord-warn" style="display:none;background:var(--red-dim);border:1px solid rgba(255,77,77,.25);border-radius:var(--r-md);padding:10px 12px;margin-bottom:12px;font-size:12px;color:var(--red);">⚠ This order uses &gt;30% of your available funds. Review carefully.</div>
+        <button class="place-btn buy" id="place-btn" onclick="placeOrder()">Place Buy Order</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ PORTFOLIO ════════════════════════════════ -->
+  <div class="page" id="page-portfolio">
+    <div class="g4 mb-20">
+      <div class="stat-card green"> <div class="stat-lbl">Invested</div>      <div class="stat-val" id="port-invested">—</div></div>
+      <div class="stat-card blue">  <div class="stat-lbl">Current Value</div> <div class="stat-val" id="port-current">—</div></div>
+      <div class="stat-card green"> <div class="stat-lbl">Total P&L</div>     <div class="stat-val" id="port-pnl">—</div><div class="stat-chg up" id="port-pnlpct">—</div></div>
+      <div class="stat-card amber"> <div class="stat-lbl">Today's P&L</div>   <div class="stat-val" style="color:var(--green)">+₹4,284</div><div class="stat-chg up">▲ +0.89%</div></div>
+    </div>
+    <div class="g2 mb-20" style="grid-template-columns:1fr 1.6fr;align-items:start;">
+      <div class="card">
+        <div class="card-h">🗂 Sector Allocation</div>
+        <div id="sector-alloc">Loading...</div>
+        <div class="ai-box" style="margin-top:14px;"><div class="ai-hdr">🤖 Diversification</div><div class="ai-body">Portfolio is moderately concentrated in IT. Consider adding FMCG or Banking for better balance.</div></div>
+      </div>
+      <div class="card">
+        <div class="card-h">💎 Holdings</div>
+        <div class="tbl-wrap">
+          <table class="data-tbl">
+            <thead><tr><th>Stock</th><th>Qty</th><th>Avg Price</th><th>CMP</th><th>P&L</th><th>Return</th><th>Value</th><th></th></tr></thead>
+            <tbody id="holdings-tbody"><tr><td colspan="8" style="text-align:center;padding:30px;color:var(--text-muted);">Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ WATCHLIST ════════════════════════════════ -->
+  <div class="page" id="page-watchlist">
+    <div class="flex-sb mb-20">
+      <div><div style="font-family:var(--font-head);font-size:17px;font-weight:700;margin-bottom:4px;">My Watchlist</div><div style="font-size:13px;color:var(--text-muted);">Track your favourite Indian stocks</div></div>
+      <button class="btn btn-g" onclick="openModal('modal-add-watch')">+ Add Stock</button>
+    </div>
+    <div class="ai-box mb-20"><div class="ai-hdr">🤖 Watchlist Alert</div><div class="ai-body">BAJFINANCE showing strong breakout pattern above ₹7,200. TATAMOTORS near key resistance — watch for volume confirmation. 3 of your watched stocks have BUY signals today.</div></div>
+    <div class="card">
+      <div class="tbl-wrap">
+        <table class="data-tbl">
+          <thead><tr><th>Stock</th><th>Price</th><th>Change</th><th>Prev Close</th><th>Signal</th><th>Action</th></tr></thead>
+          <tbody id="wl-tbody"><tr><td colspan="6" style="text-align:center;padding:30px;color:var(--text-muted);">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ STOCKS ═══════════════════════════════════ -->
+  <div class="page" id="page-stocks">
+    <div class="g4 mb-20" id="idx-cards">Loading...</div>
+    <div class="flex-sb mb-16">
+      <div class="pills" style="margin-bottom:0;">
+        <button class="pill active" onclick="filterStocks(this,'all')">All Stocks</button>
+        <button class="pill" onclick="filterStocks(this,'gainers')">🟢 Gainers</button>
+        <button class="pill" onclick="filterStocks(this,'losers')">🔴 Losers</button>
+        <button class="pill" onclick="filterStocks(this,'all')">Large Cap</button>
+        <button class="pill" onclick="filterStocks(this,'all')">IT</button>
+        <button class="pill" onclick="filterStocks(this,'all')">Banking</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="tbl-wrap">
+        <table class="data-tbl">
+          <thead><tr><th>Company</th><th>Sector</th><th>Price</th><th>Change</th><th>Mkt Cap</th><th>Action</th></tr></thead>
+          <tbody id="stocks-tbody"><tr><td colspan="6" style="text-align:center;padding:30px;color:var(--text-muted);">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ COMMODITY ════════════════════════════════ -->
+  <div class="page" id="page-commodity">
+    <div style="font-family:var(--font-head);font-size:17px;font-weight:700;margin-bottom:4px;">Commodity Markets</div>
+    <div style="font-size:13px;color:var(--text-muted);margin-bottom:20px;">MCX &amp; NCDEX real-time prices</div>
+    <div class="g4 mb-20">
+      <div class="stat-card amber"><div style="font-size:28px;margin-bottom:8px;">🥇</div><div class="stat-lbl">Gold (10g)</div><div class="stat-val" style="font-size:20px;">₹72,450</div><div class="stat-chg up">▲ +0.42%</div></div>
+      <div class="stat-card" style="background:rgba(148,163,184,.05);border-color:rgba(148,163,184,.15);"><div style="font-size:28px;margin-bottom:8px;">🥈</div><div class="stat-lbl">Silver (1kg)</div><div class="stat-val" style="font-size:20px;">₹87,320</div><div class="stat-chg up">▲ +1.10%</div></div>
+      <div class="stat-card blue"><div style="font-size:28px;margin-bottom:8px;">🛢️</div><div class="stat-lbl">Crude Oil</div><div class="stat-val" style="font-size:20px;">₹6,842</div><div class="stat-chg dn">▼ -0.78%</div></div>
+      <div class="stat-card green"><div style="font-size:28px;margin-bottom:8px;">⚡</div><div class="stat-lbl">Natural Gas</div><div class="stat-val" style="font-size:20px;">₹248.60</div><div class="stat-chg up">▲ +2.30%</div></div>
+    </div>
+    <div class="g2 mb-20">
+      <div class="ai-box"><div class="ai-hdr" style="color:var(--amber);">🥇 Gold Outlook</div><div class="ai-body">Fed rate cut expectations bullish for gold. MCX Gold may target ₹73,500–₹74,000 near term. Recommended 5–10% portfolio allocation for hedge.</div></div>
+      <div class="ai-box" style="background:linear-gradient(135deg,var(--red-dim),var(--amber-dim));border-color:rgba(255,77,77,.2);"><div class="ai-hdr" style="color:var(--red);">🛢️ Crude Alert</div><div class="ai-body">OPEC+ decisions creating volatility. MCX Crude bearish below ₹7,000. Short-term traders exercise caution near key resistance.</div></div>
+    </div>
+    <div class="card">
+      <div class="card-h">📊 All Commodities (MCX/NCDEX)</div>
+      <div class="tbl-wrap">
+        <table class="data-tbl">
+          <thead><tr><th>Commodity</th><th>Unit</th><th>Price (₹)</th><th>Change</th><th>Prev Close</th><th>Trend</th></tr></thead>
+          <tbody>
+            <tr><td><span style="font-size:18px;">🥇</span> Gold</td>       <td class="neu">10g</td>    <td class="up">₹72,450</td>  <td class="up">+0.42%</td>  <td class="neu">₹72,142</td><td>↑ Bullish</td></tr>
+            <tr><td><span style="font-size:18px;">🥈</span> Silver</td>     <td class="neu">1kg</td>    <td class="up">₹87,320</td>  <td class="up">+1.10%</td>  <td class="neu">₹86,360</td><td>↑ Bullish</td></tr>
+            <tr><td><span style="font-size:18px;">🛢️</span> Crude Oil</td>  <td class="neu">1 bbl</td>  <td class="dn">₹6,842</td>   <td class="dn">-0.78%</td>  <td class="neu">₹6,896</td> <td>↓ Bearish</td></tr>
+            <tr><td><span style="font-size:18px;">⚡</span> Natural Gas</td><td class="neu">MMBtu</td>  <td class="up">₹248.60</td>  <td class="up">+2.30%</td>  <td class="neu">₹243.10</td><td>↑ Bullish</td></tr>
+            <tr><td><span style="font-size:18px;">🔶</span> Copper</td>     <td class="neu">1kg</td>    <td class="up">₹847.30</td>  <td class="up">+0.91%</td>  <td class="neu">₹839.80</td><td>↑ Bullish</td></tr>
+            <tr><td><span style="font-size:18px;">🟤</span> Zinc</td>       <td class="neu">1kg</td>    <td class="dn">₹284.70</td>  <td class="dn">-0.44%</td>  <td class="neu">₹286.00</td><td>↓ Bearish</td></tr>
+            <tr><td><span style="font-size:18px;">🌿</span> Cotton</td>     <td class="neu">1 bale</td> <td class="dn">₹62,840</td>  <td class="dn">-0.62%</td>  <td class="neu">₹63,200</td><td>↓ Bearish</td></tr>
+            <tr><td><span style="font-size:18px;">🫘</span> Soybean</td>    <td class="neu">100kg</td>  <td class="up">₹4,820</td>   <td class="up">+0.67%</td>  <td class="neu">₹4,788</td> <td>↑ Bullish</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ F&O ══════════════════════════════════════ -->
+  <div class="page" id="page-fno">
+    <div class="flex-c gap-12 mb-16"><div style="font-family:var(--font-head);font-size:17px;font-weight:700;">Futures &amp; Options</div><span class="tag tr">⚠ High Risk</span></div>
+    <div style="background:var(--red-dim);border:1px solid rgba(255,77,77,.2);border-radius:var(--r-lg);padding:14px;margin-bottom:20px;font-size:13px;color:var(--text-2);">⚠ <strong style="color:var(--red);">F&O Risk Warning:</strong> 90%+ retail traders lose money in futures &amp; options. Only trade if you fully understand the risks involved.</div>
+    <div class="g4 mb-20">
+      <div class="stat-card blue">  <div class="stat-lbl">PCR (Put-Call Ratio)</div><div class="stat-val">1.24</div><div class="stat-chg up">Bullish signal</div></div>
+      <div class="stat-card green"> <div class="stat-lbl">Max Pain (Nifty)</div>   <div class="stat-val">24,000</div><div class="stat-chg neu">Expiry: Thu</div></div>
+      <div class="stat-card amber"> <div class="stat-lbl">India VIX</div>           <div class="stat-val">13.42</div><div class="stat-chg dn">Low Volatility</div></div>
+      <div class="stat-card purple"><div class="stat-lbl">Open Interest</div>       <div class="stat-val">₹2.4L Cr</div><div class="stat-chg up">▲ Rising</div></div>
+    </div>
+    <div class="card mb-16">
+      <div class="flex-sb mb-16">
+        <div class="card-h" style="margin-bottom:0;">🎯 Options Chain — NIFTY 24,141</div>
+        <div class="flex-c gap-8">
+          <select class="f-ctrl" style="width:auto;font-size:12px;padding:5px 10px;"><option>NIFTY</option><option>BANKNIFTY</option><option>RELIANCE</option><option>TCS</option></select>
+          <select class="f-ctrl" style="width:auto;font-size:12px;padding:5px 10px;"><option>26 Jun 2025</option><option>31 Jul 2025</option></select>
+        </div>
+      </div>
+      <div class="tbl-wrap">
+        <table class="data-tbl" style="min-width:720px;">
+          <thead>
+            <tr><th colspan="4" style="text-align:center;color:var(--green);background:rgba(0,208,156,.04);">← CALLS</th><th style="text-align:center;background:rgba(255,255,255,.04);">Strike</th><th colspan="4" style="text-align:center;color:var(--red);background:rgba(255,77,77,.04);">PUTS →</th></tr>
+            <tr><th>OI</th><th>Vol</th><th>IV%</th><th>LTP</th><th style="text-align:center;background:rgba(255,255,255,.04);">Price</th><th>LTP</th><th>IV%</th><th>Vol</th><th>OI</th></tr>
+          </thead>
+          <tbody id="options-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-h">📈 Active Futures</div>
+      <div class="tbl-wrap">
+        <table class="data-tbl">
+          <thead><tr><th>Contract</th><th>Expiry</th><th>LTP</th><th>Change</th><th>Lot Size</th><th>OI (Lots)</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr><td style="font-weight:700;">NIFTY FUT</td>     <td class="neu">26 Jun 2025</td><td class="up" style="font-weight:700;">24,168</td><td class="up">+0.98%</td><td class="neu">25</td> <td class="neu">1,82,400</td><td><div class="flex-c gap-8"><button class="btn btn-g btn-sm">Buy</button><button class="btn btn-r btn-sm">Sell</button></div></td></tr>
+            <tr><td style="font-weight:700;">BANKNIFTY FUT</td> <td class="neu">26 Jun 2025</td><td class="up" style="font-weight:700;">51,892</td><td class="up">+0.63%</td><td class="neu">15</td> <td class="neu">98,200</td><td><div class="flex-c gap-8"><button class="btn btn-g btn-sm">Buy</button><button class="btn btn-r btn-sm">Sell</button></div></td></tr>
+            <tr><td style="font-weight:700;">RELIANCE FUT</td>  <td class="neu">26 Jun 2025</td><td class="up" style="font-weight:700;">2,851</td> <td class="up">+1.74%</td><td class="neu">250</td><td class="neu">24,800</td><td><div class="flex-c gap-8"><button class="btn btn-g btn-sm">Buy</button><button class="btn btn-r btn-sm">Sell</button></div></td></tr>
+            <tr><td style="font-weight:700;">TCS FUT</td>       <td class="neu">26 Jun 2025</td><td class="dn" style="font-weight:700;">3,985</td> <td class="dn">-0.82%</td> <td class="neu">150</td><td class="neu">18,400</td><td><div class="flex-c gap-8"><button class="btn btn-g btn-sm">Buy</button><button class="btn btn-r btn-sm">Sell</button></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ IPO ══════════════════════════════════════ -->
+  <div class="page" id="page-ipo">
+    <div style="font-family:var(--font-head);font-size:17px;font-weight:700;margin-bottom:4px;">IPO Dashboard</div>
+    <div style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">Apply, track &amp; get AI-powered IPO ratings</div>
+    <div class="ai-box mb-20"><div class="ai-hdr">🤖 IPO Intelligence</div><div class="ai-body">Bajaj Housing Finance has strong GMP of +62% — subscription expected 80–100x. Apply with max lots. Swiggy IPO upcoming, watch for DRHP details. Ola Electric: proceed with caution — EV sector headwinds.</div></div>
+    <div class="gauto">
+      <div class="ipo-card"><div class="flex-sb mb-12"><div style="font-family:var(--font-head);font-size:15px;font-weight:700;">Bajaj Housing Finance</div><span class="tag tg">Upcoming</span></div><span class="tag tb">NBFC</span><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;font-size:12.5px;"><div><div style="color:var(--text-muted);margin-bottom:2px;">Price Band</div><div style="font-weight:700;">₹66–70</div></div><div><div style="color:var(--text-muted);margin-bottom:2px;">Lot Size</div><div style="font-weight:700;">214 shares</div></div><div><div style="color:var(--text-muted);margin-bottom:2px;">Open</div><div style="font-weight:600;">9 Jun</div></div><div><div style="color:var(--text-muted);margin-bottom:2px;">GMP</div><div style="font-weight:700;color:var(--green);">+62%</div></div></div><div style="margin-bottom:12px;font-size:13px;">⭐⭐⭐⭐⭐</div><button class="btn btn-g btn-fw" onclick="toast('Bajaj HF IPO application process started!','success')">Strong Apply →</button></div>
+      <div class="ipo-card"><div class="flex-sb mb-12"><div style="font-family:var(--font-head);font-size:15px;font-weight:700;">Ola Electric</div><span class="tag tg">Open</span></div><span class="tag tp">EV Tech</span><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;font-size:12.5px;"><div><div style="color:var(--text-muted);margin-bottom:2px;">Price Band</div><div style="font-weight:700;">₹72–76</div></div><div><div style="color:var(--text-muted);margin-bottom:2px;">Lot Size</div><div style="font-weight:700;">195 shares</div></div><div><div style="color:var(--text-muted);margin-bottom:2px;">Close</div><div style="font-weight:600;">14 Jun</div></div><div><div style="color:var(--text-muted);margin-bottom:2px;">GMP</div><div style="font-weight:700;color:var(--green);">+34%</div></div></div><div style="margin-bottom:12px;font-size:13px;">⭐⭐⭐⭐</div><button class="btn btn-g btn-fw" onclick="toast('Ola Electric IPO application started!','success')">Apply →</button></div>
+      <div class="ipo-card"><div class="flex-sb mb-12"><div style="font-family:var(--font-head);font-size:15px;font-weight:700;">NTPC Green Energy</div><span class="tag ta">Upcoming</span></div><span class="tag tg">Renewable</span><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;font-size:12.5px;"><div><div style="color:var(--text-muted);margin-bottom:2px;">Price Band</div><div style="font-weight:700;">₹48–52</div></div><div><div style="color:var(--text-muted);margin-bottom:2px;">Lot Size</div><div style="font-weight:700;">288 shares</div></div><div><div style="color:var(--text-muted);margin-bottom:2px;">Open</div><div style="font-weight:600;">20 Jun</div></div><div><div style="color:var(--text-muted);margin-bottom:2px;">GMP</div><div style="font-weight:700;color:var(--green);">+28%</div></div></div><div style="margin-bottom:12px;font-size:13px;">⭐⭐⭐⭐</div><button class="btn btn-ghost btn-fw">Notify Me</button></div>
+      <div class="ipo-card"><div class="flex-sb mb-12"><div style="font-family:var(--font-head);font-size:15px;font-weight:700;">Swiggy Ltd</div><span class="tag ta">Upcoming</span></div><span class="tag tp">FoodTech</span><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;font-size:12.5px;"><div><div style="color:var(--text-muted);margin-bottom:2px;">Price Band</div><div style="font-weight:700;">₹390–420</div></div><div><div style="color:var(--text-muted);margin-bottom:2px;">Lot Size</div><div style="font-weight:700;">35 shares</div></div><div><div style="color:var(--text-muted);margin-bottom:2px;">Open</div><div style="font-weight:600;">28 Jun</div></div><div><div style="color:var(--text-muted);margin-bottom:2px;">GMP</div><div style="font-weight:700;color:var(--green);">+48%</div></div></div><div style="margin-bottom:12px;font-size:13px;">⭐⭐⭐⭐</div><button class="btn btn-ghost btn-fw">Notify Me</button></div>
+    </div>
+  </div>
+
+  <!-- ════════════ MUTUAL FUNDS ════════════════════════════ -->
+  <div class="page" id="page-mf">
+    <div style="font-family:var(--font-head);font-size:17px;font-weight:700;margin-bottom:4px;">Mutual Funds</div>
+    <div style="font-size:13px;color:var(--text-muted);margin-bottom:20px;">Invest via SIP or lumpsum · Powered by AMFI</div>
+    <div class="g4 mb-20">
+      <div class="stat-card green"><div class="stat-lbl">Active SIPs</div><div class="stat-val">₹15,000</div><div class="stat-chg up">3 active SIPs</div></div>
+      <div class="stat-card blue"> <div class="stat-lbl">MF Portfolio</div><div class="stat-val">₹2,84,000</div><div class="stat-chg up">▲ +18.4%</div></div>
+      <div class="stat-card amber"><div class="stat-lbl">XIRR</div>         <div class="stat-val">16.8%</div><div class="stat-chg up">Since inception</div></div>
+      <div class="stat-card purple"><div class="stat-lbl">Dividends</div>   <div class="stat-val">₹4,240</div><div class="stat-chg neu">This year</div></div>
+    </div>
+    <div class="card">
+      <div class="tbl-wrap">
+        <table class="data-tbl">
+          <thead><tr><th>Fund Name</th><th>NAV</th><th>1Y Return</th><th>3Y Return</th><th>Risk</th><th>Rating</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr><td><div style="font-weight:600;">Mirae Asset Large Cap</div><div style="font-size:11px;color:var(--text-muted);">Large Cap</div></td><td class="neu">₹98.42</td><td class="up">+18.4%</td><td class="up">+14.2%</td><td><span class="tag tg">Low</span></td><td>⭐⭐⭐⭐⭐</td><td><button class="btn btn-b btn-sm" onclick="toast('SIP started for Mirae Asset!','success')">Invest</button></td></tr>
+            <tr><td><div style="font-weight:600;">Axis Midcap Fund</div><div style="font-size:11px;color:var(--text-muted);">Mid Cap</div></td><td class="neu">₹142.18</td><td class="up">+28.6%</td><td class="up">+22.8%</td><td><span class="tag tr">High</span></td><td>⭐⭐⭐⭐⭐</td><td><button class="btn btn-b btn-sm" onclick="toast('SIP started for Axis Midcap!','success')">Invest</button></td></tr>
+            <tr><td><div style="font-weight:600;">HDFC Balanced Advantage</div><div style="font-size:11px;color:var(--text-muted);">Hybrid</div></td><td class="neu">₹384.60</td><td class="up">+14.2%</td><td class="up">+11.6%</td><td><span class="tag ta">Medium</span></td><td>⭐⭐⭐⭐</td><td><button class="btn btn-b btn-sm" onclick="toast('SIP started for HDFC Balanced!','success')">Invest</button></td></tr>
+            <tr><td><div style="font-weight:600;">SBI Small Cap Fund</div><div style="font-size:11px;color:var(--text-muted);">Small Cap</div></td><td class="neu">₹184.92</td><td class="up">+34.8%</td><td class="up">+28.4%</td><td><span class="tag tr">V.High</span></td><td>⭐⭐⭐⭐</td><td><button class="btn btn-b btn-sm" onclick="toast('SIP started for SBI Small Cap!','success')">Invest</button></td></tr>
+            <tr><td><div style="font-weight:600;">Parag Parikh Flexicap</div><div style="font-size:11px;color:var(--text-muted);">Flexicap</div></td><td class="neu">₹74.28</td><td class="up">+21.4%</td><td class="up">+18.2%</td><td><span class="tag ta">Medium</span></td><td>⭐⭐⭐⭐⭐</td><td><button class="btn btn-b btn-sm" onclick="toast('SIP started for Parag Parikh!','success')">Invest</button></td></tr>
+            <tr><td><div style="font-weight:600;">Nippon India Index Fund</div><div style="font-size:11px;color:var(--text-muted);">Index</div></td><td class="neu">₹38.42</td><td class="up">+16.8%</td><td class="up">+13.4%</td><td><span class="tag tg">Low</span></td><td>⭐⭐⭐⭐</td><td><button class="btn btn-b btn-sm" onclick="toast('SIP started for Nippon Index!','success')">Invest</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ ORDERS ═══════════════════════════════════ -->
+  <div class="page" id="page-orders">
+    <div style="font-family:var(--font-head);font-size:17px;font-weight:700;margin-bottom:4px;">Order History</div>
+    <div style="font-size:13px;color:var(--text-muted);margin-bottom:20px;">All your executed trades · Connected to Spring Boot backend</div>
+    <div class="card">
+      <div class="tbl-wrap">
+        <table class="data-tbl">
+          <thead><tr><th>Order ID</th><th>Symbol</th><th>Type</th><th>Qty</th><th>Price</th><th>Value</th><th>Time</th></tr></thead>
+          <tbody id="orders-tbody"><tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text-muted);">Loading orders...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ PROFILE ══════════════════════════════════ -->
+  <div class="page" id="page-profile">
+    <div class="g2" style="grid-template-columns:1fr 1.2fr;align-items:start;">
+      <div>
+        <div class="card mb-16">
+          <div class="flex-c gap-12 mb-20">
+            <div class="u-avatar" style="width:56px;height:56px;font-size:20px;border-radius:14px;" id="prof-avatar">RS</div>
+            <div><div style="font-family:var(--font-head);font-size:18px;font-weight:700;" id="prof-name">—</div><div style="font-size:12px;color:var(--text-muted);" id="prof-email">—</div><div style="margin-top:6px;display:flex;gap:6px;"><span class="tag tg">✅ KYC</span><span class="tag tb">⭐ Pro</span></div></div>
+          </div>
+          <div class="f-group"><label class="f-label">Full Name</label><input class="f-ctrl" id="prof-name-inp" placeholder="Your name"></div>
+          <div class="f-group"><label class="f-label">Email</label><input type="email" class="f-ctrl" placeholder="your@email.com"></div>
+          <div class="f-group"><label class="f-label">Mobile</label><input type="tel" class="f-ctrl" placeholder="+91 98765 43210"></div>
+          <button class="btn btn-g" onclick="saveProfile()">💾 Save Changes</button>
+        </div>
+        <div class="card">
+          <div class="card-h">💰 Account Summary</div>
+          <div class="idx-row"><span>Available Balance</span><span class="up" id="prof-balance">—</span></div>
+          <div class="idx-row"><span>Portfolio Value</span><span class="neu">₹4,82,350</span></div>
+          <div class="idx-row"><span>Total Trades</span><span class="neu" id="prof-trades">0</span></div>
+          <div class="idx-row"><span>Member Since</span><span style="color:var(--text-muted);">Jan 2024</span></div>
+        </div>
+      </div>
+      <div>
+        <div class="card mb-16">
+          <div class="card-h">⚙️ Preferences</div>
+          <div class="pref-row"><div><div style="font-size:13.5px;font-weight:600;">Price Alerts</div><div style="font-size:12px;color:var(--text-muted);">Notify on significant price moves</div></div><div class="toggle on" onclick="this.classList.toggle('on')"><div class="toggle-knob"></div></div></div>
+          <div class="pref-row"><div><div style="font-size:13.5px;font-weight:600;">Daily Market Summary</div><div style="font-size:12px;color:var(--text-muted);">Morning email with market insights</div></div><div class="toggle on" onclick="this.classList.toggle('on')"><div class="toggle-knob"></div></div></div>
+          <div class="pref-row"><div><div style="font-size:13.5px;font-weight:600;">AI Recommendations</div><div style="font-size:12px;color:var(--text-muted);">Personalized stock picks via AI</div></div><div class="toggle on" onclick="this.classList.toggle('on')"><div class="toggle-knob"></div></div></div>
+          <div class="pref-row"><div><div style="font-size:13.5px;font-weight:600;">Risk Warnings</div><div style="font-size:12px;color:var(--text-muted);">Alert before high-risk trades</div></div><div class="toggle on" onclick="this.classList.toggle('on')"><div class="toggle-knob"></div></div></div>
+          <div class="pref-row" style="border-bottom:none;"><div><div style="font-size:13.5px;font-weight:600;">F&O Alerts</div><div style="font-size:12px;color:var(--text-muted);">Options chain & expiry reminders</div></div><div class="toggle" onclick="this.classList.toggle('on')"><div class="toggle-knob"></div></div></div>
+        </div>
+        <div class="card">
+          <div class="card-h">🔐 Security</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <button class="btn btn-ghost" style="justify-content:flex-start;" onclick="toast('Change password flow will open','info')">🔑 Change Password</button>
+            <button class="btn btn-ghost" style="justify-content:flex-start;" onclick="toast('2FA setup — coming soon!','info')">📱 Setup 2FA (Coming Soon)</button>
+            <button class="btn btn-ghost" style="justify-content:flex-start;" onclick="toast('Downloading account statement...','success')">📄 Download Statement</button>
+            <button class="btn" style="background:var(--red-dim);color:var(--red);border:1px solid rgba(255,77,77,.25);justify-content:flex-start;" onclick="API.logout()">↩ Logout from StockPulse</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+ <!-- FOOTER here -->
+    <footer class="sp-footer"> ... </footer>
+  </div><!-- /page-content -->
+</div><!-- /main-wrap -->
+</div><!-- /app-shell -->
+
+<!-- ═══════════ QUICK TRADE MODAL ══════════════════════════ -->
+<div class="modal-overlay" id="modal-trade">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modal-trade')">✕</button>
+    <div class="flex-c gap-12" style="margin-bottom:14px;">
+      <div style="flex:1;"><div class="modal-title" id="qt-sym">—</div><div style="font-size:12px;color:var(--text-muted);" id="qt-company">—</div></div>
+      <div style="text-align:right;"><div style="font-family:var(--font-mono);font-size:20px;font-weight:700;" id="qt-price">—</div><div id="qt-chg" class="up" style="font-size:12px;">—</div></div>
+    </div>
+    <div class="order-tabs">
+      <button class="o-tab buy active" id="qt-tab-buy"  onclick="setQtMode('buy')">BUY</button>
+      <button class="o-tab sell"       id="qt-tab-sell" onclick="setQtMode('sell')">SELL</button>
+    </div>
+    <div class="f-group"><label class="f-label">Quantity</label><input type="number" class="f-ctrl" id="qt-qty" value="1" min="1" oninput="calcQtOrder()"></div>
+    <div style="display:flex;justify-content:space-between;padding:10px 14px;background:rgba(0,0,0,.25);border-radius:var(--r-md);margin-bottom:14px;font-size:13px;">
+      <span style="color:var(--text-muted);">Estimated Total</span>
+      <span style="font-weight:700;font-family:var(--font-mono);color:var(--green);" id="qt-total">—</span>
+    </div>
+    <button class="place-btn buy" id="qt-place-btn" onclick="placeQtOrder()">Place Order</button>
+  </div>
+</div>
+
+<!-- ═══════════ ADD WATCHLIST MODAL ════════════════════════ -->
+<div class="modal-overlay" id="modal-add-watch">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modal-add-watch')">✕</button>
+    <div class="modal-title">Add to Watchlist ★</div>
+    <div class="modal-sub">Search any NSE listed stock</div>
+    <input type="text" class="f-ctrl" placeholder="e.g. RELIANCE, TCS, HDFC..." id="wl-search-inp" oninput="renderWlSearch(this.value)" style="margin-bottom:12px;">
+    <div id="wl-search-res" style="max-height:260px;overflow-y:auto;"></div>
+  </div>
+</div>
+
+<!-- ═══════════ TOAST ROOT ═══════════════════════════════════ -->
+<div id="toast-root"></div>
+
+<!-- Scripts -->
+<script src="js/api.js"></script>
+<script src="js/dashboard.js"></script>
+<script>
+  function setPill(el, tf) {
+    el.closest('.pills').querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+    // Re-render chart (same data, different label in real implementation)
+    if (priceChart) { const s = MOCK.getStock(selectedSym); if(s) renderPriceChart(s); }
+  }
+
+  function renderWlSearch(q) {
+    const el = document.getElementById('wl-search-res');
+    if (!q.trim()) { el.innerHTML=''; return; }
+    const res = MOCK.stocks.filter(s =>
+      s.symbol.includes(q.toUpperCase()) || s.companyName.toLowerCase().includes(q.toLowerCase())
+    ).slice(0, 8);
+    el.innerHTML = res.map(s => {
+      const inList = MOCK.watchlist.includes(s.symbol);
+      const col = MOCK.getColor(s.sector);
+      return `<div class="watch-item" style="border-radius:8px;">
+        <div class="stock-cell" style="flex:1;">
+          <div class="s-icon" style="background:${col}22;color:${col};width:28px;height:28px;font-size:11px;">${s.iconCode}</div>
+          <div><div class="s-name">${s.symbol}</div><div class="s-sub">${s.companyName}</div></div>
+        </div>
+        <button class="btn ${inList?'btn-ghost':'btn-g'} btn-sm" onclick="toggleWatch('${s.symbol}');renderWlSearch(document.getElementById('wl-search-inp').value)">
+          ${inList ? '★ Added' : '+ Add'}
+        </button>
+      </div>`;
+        }).join('');
+  }
+
+
+//  ============================================================
+    //  Stock Pulse Footer
+    //  Paste this block just before </body>
+  
+<footer class="sp-footer">
+  <div class="sp-footer-inner">
+    <div class="sp-footer-top">
+
+      <div class="sp-brand-col">
+        <p class="sp-brand-name">Stock Pulse</p>
+        <p class="sp-tagline">Track. Analyze. Grow with Stock Pulse &mdash;
+           your intelligent companion for the Indian market.</p>
+        <div class="sp-social-row">
+          <a href="https://linkedin.com/company/stockpulse" target="_blank" rel="noopener" class="sp-icon-btn" aria-label="LinkedIn">
+            <svg viewBox="0 0 24 24"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.95v5.66H9.34V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.07 2.07 0 1 1 0-4.14 2.07 2.07 0 0 1 0 4.14zm1.78 13.02H3.55V9h3.57v11.45zM22.23 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.46c.98 0 1.77-.77 1.77-1.72V1.72C24 .77 23.21 0 22.23 0z"/></svg>
+          </a>
+          <a href="https://twitter.com/stockpulse_in" target="_blank" rel="noopener" class="sp-icon-btn" aria-label="X Twitter">
+            <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+          <a href="https://instagram.com/stockpulse.in" target="_blank" rel="noopener" class="sp-icon-btn" aria-label="Instagram">
+            <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <div>
+        <p class="sp-section-title">Quick Links</p>
+        <ul class="sp-links">
+          <li><a href="pages/about.html">About</a></li>
+          <li><a href="index.html">Dashboard</a></li>
+          <li><a href="index.html#stocks">Market Trends</a></li>
+          <li><a href="pages/contact.html">Contact</a></li>
+          <li><a href="pages/privacy.html">Privacy Policy</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <p class="sp-section-title">Support</p>
+        <ul class="sp-links">
+          <li><a href="pages/help.html">Help Centre</a></li>
+          <li><a href="pages/faq.html">FAQ</a></li>
+          <li><a href="pages/feedback.html">Send Feedback</a></li>
+          <li><a href="mailto:support@stockpulse.in">support@stockpulse.in</a></li>
+        </ul>
+        <div class="sp-market-status" style="margin-top:16px;">
+          <span class="sp-pulse-dot"></span>
+          <span id="footer-market-status">Checking...</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="sp-footer-divider"></div>
+
+    <div class="sp-footer-bottom">
+      <p class="sp-copy">&copy; 2026 Stock Pulse | All Rights Reserved</p>
+      <p class="sp-disclaimer">For educational simulation only. Not SEBI registered.</p>
+    </div>
+  </div>
+</footer>
+
+  
+</script>
+</body>
+</html>
